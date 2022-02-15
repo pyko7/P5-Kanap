@@ -11,10 +11,10 @@ const getProducts = async () => {
 
 //function qui affiche les produits sur la page
 const renderProducts = async () => {
-    //section où les produits seront visibles
-    const itemSection = document.getElementById('items');
     //attendre de récupérer produits avant de faire la loop
     let products = await getProducts();
+    //section où les produits seront visibles
+    const itemSection = document.getElementById('items');
     //loop qui va selectionner chaque produits du tableau
     products.forEach(e => {
     // += permet afficher tous les éléments

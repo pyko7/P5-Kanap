@@ -9,6 +9,13 @@ const getProducts = async () =>{
     return data;
     console.log(data);
 }
+//function défini le title de la page
+const pageName = async () =>{
+        let pageName = await getProducts();
+        document.title = pageName.name;
+    }
+    
+    
 
 //function affiche les détails du produit
 const displayProducts = async () =>{
@@ -35,5 +42,5 @@ const displayProducts = async () =>{
         colors.value = e;
     });
 }
-
+pageName();
 displayProducts();

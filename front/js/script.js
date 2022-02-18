@@ -1,33 +1,38 @@
-//function qui récupère tous les produits
-const getProducts = async () => {
-    //appel à la base de données, récupération de la liste des produits
+//function qui récupère les données
+const getProducts = async () =>{
     const response = await fetch("http://localhost:3000/api/products");
-    //verification que la reponse soit correct
+    //transforme la réponse en json
+    const data = await response.json();
+    
     if(response.ok){
-        //renvoie de la reponse sous format json
-        return await response.json();
+        console.log(data);
+        return data;
+    }else{
+        console.log("error");
     }
 }
 
 //function qui affiche les produits sur la page
-const renderProducts = async () => {
-    //attendre de récupérer produits avant de faire la loop
+const displayProducts = async () =>{
     let products = await getProducts();
-    //section où les produits seront visibles
+    //container de tous les produits
     const itemSection = document.getElementById('items');
-    //loop qui va selectionner chaque produits du tableau
+    //loop va prendre chaque élément du tableau
     products.forEach(e => {
-    // += permet afficher tous les éléments
-    itemSection.innerHTML +=
-            //renvoi vers la page du produit
-            `<a href="./product.html?id=${e._id}">
-                <article>
-                    <img src="${e.imageUrl}" alt="${e.altTxt}">
-                    <h3 class="productName">${e.name}</h3>
-                    <p class="productDescription">${e.description}</p>
-            </article>
-          </a>`;
-    });
-}
+        //+= permet avoir plusieurs éléments affiché
+        itemSection.innerHTML +=
+        `
+        <a href="./product.html?id=${e._id}">
+        <article>
+          <img src="${e.imageUrl}" alt="${e.altTxt}">
+          <h3 class="productName">${e.name}</h3>
+          <p class="productDescription">${e.description}</p>
+        </article>
+      </a>
+        `
+        })
+    };
 
-renderProducts();
+
+displayProducts();
+

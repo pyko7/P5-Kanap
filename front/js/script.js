@@ -5,7 +5,6 @@ const getProducts = async () =>{
     const data = await response.json();
     
     if(response.ok){
-        console.log(data);
         return data;
     }else{
         console.log("error");
@@ -18,15 +17,15 @@ const displayProducts = async () =>{
     //container de tous les produits
     const itemSection = document.getElementById('items');
     //loop va prendre chaque élément du tableau
-    products.forEach(e => {
+    products.forEach(element => {
         //+= permet avoir plusieurs éléments affiché
         itemSection.innerHTML +=
         `
-        <a href="./product.html?id=${e._id}">
+        <a href="./product.html?id=${element._id}">
         <article>
-          <img src="${e.imageUrl}" alt="${e.altTxt}">
-          <h3 class="productName">${e.name}</h3>
-          <p class="productDescription">${e.description}</p>
+          <img src="${element.imageUrl}" alt="${element.altTxt}">
+          <h3 class="productName">${element.name}</h3>
+          <p class="productDescription">${element.description}</p>
         </article>
       </a>
         `

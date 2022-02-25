@@ -130,7 +130,7 @@ const removeProduct = (product) =>{
 }
 
 //function test la validité des inputs
-const inputController = () =>{
+const formSubmit = () =>{
   let form = document.querySelector('.cart__order__form');
   let firstNameMessage = document.getElementById('firstNameErrorMsg')
   let lastNameMessage = document.getElementById('lastNameErrorMsg')
@@ -138,6 +138,7 @@ const inputController = () =>{
   let addressMessage = document.getElementById('addressErrorMsg')
   let emailMessage = document.getElementById('emailErrorMsg')
 
+  //contrôle de la validité des inputs
   form.firstName.addEventListener('change', ()=>{
       validTextInput(form.firstName, firstNameMessage);
   });
@@ -153,35 +154,83 @@ const inputController = () =>{
     validTextInput(form.address,addressMessage);
   })
   form.email.addEventListener('change', ()=>{
-      validEmailInput(form.email);
+      validEmailInput(form.email,emailMessage);
   });
 
+  //function contrôle validité des inputs text
   const validTextInput = (input, error) =>{
-    let textRegExp = new RegExp ('^.{2,}$', 'g');
-    let testInput = textRegExp.test(input.value);
-    if (testInput){
+    // let textRegExp = new RegExp ('^.{2,}$', 'g');
+    // let testInput = textRegExp.test(input.value);
+    if (input.value.length >= 2){
       error.textContent = '';
-      return input.value;
+      return true;
     }else{
-      console.log(error);
       error.textContent = "Le champ doit contenir au moins 2 caractères";
+      return false;
     }
   }
-
-  const validEmailInput = (input) =>{
-    let emailRegExp = new RegExp ('^[a-zA-Z0-9.!#$%&’*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$', 'g');
+  
+  //function contrôle validité des inputs email
+  const validEmailInput = (input, error) =>{
+    let emailRegExp = new RegExp ('^[a-zA-Z0-9.-_]+[@]{1}[a-zA-Z]+[.]{1}[a-z]{2,5}$', 'g');
     let testEmail = emailRegExp.test(input.value);
+    console.log(testEmail);
     if (testEmail) {
       emailMessage.textContent = "";
-      return input.value;
+      return true;
     }else{
       emailMessage.textContent = 'Veuillez choisir une adresse email valide';
+      return false;
     }
   }
 
+  form.addEventListener('submit', (e)=>{
+    
+    // validTextInput(form.email,error);
+    let cart = getCart();
+    let contact = {
+      firstName: form.firstName.value,
+      lastName: form.lastName.value,
+      address: form.address.value,
+      city: form.city.value,
+      email: form.email.value,
+      products: [cart]
+    }
+    console.log(contact.products);
+    //vérifie si tous les champs sont correctements remplis
+    if (validEmailInput(email)===false || Object.values(contact).some(obj => obj === false)){
+      e.preventDefault();
+      alert('Veuillez vérifier la validité de vos champs !');
+    //vérifie si le panier est rempli
+    }else if(contact.products == false){
+      e.preventDefault();
+      alert('Votre panier est vide, veuillez le remplir !');
+    }else{
+      alert('Votre commande a bien été prise en compte !');
+      e.preventDefault();
+      
+      // form.submit();
+    }
+
+  })
 }
 
+// //function envoie les données
+// const sendOrder = async (order) =>{
+//   const res = await fetch("http://localhost:3000/api/products/order",
+//   {method: 'POST',
+//   headers: {
+//     "Content-Type": "application/json"
+//   },
+//   body: JSON.stringify(order),
+//   });
+// }
 
+// //function récupère l'id de la commande
+// const getOrderId = async () =>{
+//   let res = await sendOrder();
+//   console.log(thisRes);
+// }
 
 displayOrder();
-inputController();
+formSubmit();

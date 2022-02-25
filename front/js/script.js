@@ -1,10 +1,10 @@
 //function qui récupère les données
 const getProducts = async () =>{
-    const response = await fetch("http://localhost:3000/api/products");
+    const res = await fetch("http://localhost:3000/api/products");
     //transforme la réponse en json
-    const data = await response.json();
+    const data = await res.json();
     
-    if(response.ok){
+    if(res.ok){
         return data;
     }else{
         console.log("error");

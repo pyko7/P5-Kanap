@@ -21,7 +21,7 @@ const pageName = async () =>{
 //function affiche les détails du produit
 const displayProduct = async () =>{
     //récupère les données via la fonction
-    var product = await getProduct();
+    let product = await getProduct();
 
     //déclarations des variables
     const productImg = document.querySelector('.item__img');
@@ -47,6 +47,11 @@ const displayProduct = async () =>{
     addCart(product);
 }
 
+//function stock élément dans localStorage
+const saveCart = (cart) =>{
+    localStorage.setItem('cart', JSON.stringify(cart));
+}
+
 //function récupère élément dans localStorage
 const getCart = () =>{
     let cart = JSON.parse(localStorage.getItem('cart'));
@@ -57,9 +62,12 @@ const getCart = () =>{
         }
 }
 
+//function ajoute les éléments au panier
 const addCart = (product) =>{
+    let cart = getCart();
     //déclaration des variables
     const addToCart = document.getElementById('addToCart');
+    const quantity = document.getElementById('quantity');
     const productColors = document.getElementById('colors');
 
     //event lors du click sur le bouton ajouter au panier
@@ -70,25 +78,19 @@ const addCart = (product) =>{
             color: productColors.value,
             quantity: quantity.value
         }
+    let foundId = cart.find(element => element.id == kanap.id && element.color == kanap.color)
 
-        let cart = getCart();
-
-    //vérification de la présence de l'id dans l'array
-    let findProduct = cart.find(element => element.id == kanap.id)
-    let findColor = cart.find(element => element.color == kanap.color)
-
-        //condition si article déjà dans le panier --> augmente la quantité
-        if(findProduct != undefined && findColor !=undefined){
+    if(foundId != undefined){
         //augmente la qté de la couleur choisie
-            findColor.quantity = parseInt(findProduct.quantity) + parseInt(quantity.value);
+        foundId.quantity = parseInt(foundId.quantity) + parseInt(quantity.value);
         }else{
         //ajoute un nouveau produit au panier
-            kanap.quantity = quantity.value ;
-            cart.push(kanap);
-        }        
+        kanap.quantity = parseInt(quantity.value);
+        cart.push(kanap);
+    }        
 
-    //stock élément dans localStorage
-    localStorage.setItem('cart', JSON.stringify(cart));
+    saveCart(cart);
+
     });
 }
 

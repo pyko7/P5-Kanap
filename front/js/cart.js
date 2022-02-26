@@ -174,7 +174,6 @@ const formSubmit = () =>{
   const validEmailInput = (input, error) =>{
     let emailRegExp = new RegExp ('^[a-zA-Z0-9.-_]+[@]{1}[a-zA-Z]+[.]{1}[a-z]{2,5}$', 'g');
     let testEmail = emailRegExp.test(input.value);
-    console.log(testEmail);
     if (testEmail) {
       emailMessage.textContent = "";
       return true;
@@ -185,52 +184,60 @@ const formSubmit = () =>{
   }
 
   form.addEventListener('submit', (e)=>{
-    
-    // validTextInput(form.email,error);
-    let cart = getCart();
-    let contact = {
-      firstName: form.firstName.value,
-      lastName: form.lastName.value,
-      address: form.address.value,
-      city: form.city.value,
-      email: form.email.value,
-      products: [cart]
-    }
-    console.log(contact.products);
-    //vérifie si tous les champs sont correctements remplis
-    if (validEmailInput(email)===false || Object.values(contact).some(obj => obj === false)){
-      e.preventDefault();
+    e.preventDefault();
+      let cart = getCart();
+      let products = [];
+      cart.forEach(element =>{
+        let productId = element.id;
+        products.push(productId)
+      })
+      let order = {
+      contact: {
+        firstName: form.firstName.value,
+        lastName: form.lastName.value,
+        address: form.address.value,
+        city: form.city.value,
+        email: form.email.value
+      },
+      products: products
+  };
+
+  //vérifie si tous les champs sont correctements remplis
+    if (validEmailInput(email)===false || Object.values(order).some(obj => obj === false)){
       alert('Veuillez vérifier la validité de vos champs !');
-    //vérifie si le panier est rempli
-    }else if(contact.products == false){
       e.preventDefault();
+    //vérifie si le panier est rempli
+    }else if(cart == false){
       alert('Votre panier est vide, veuillez le remplir !');
-    }else{
+      e.preventDefault();
+    }else{ 
       alert('Votre commande a bien été prise en compte !');
       e.preventDefault();
-      
       // form.submit();
     }
 
-  })
+    const sendOrder = (order) =>{
+      fetch("http://localhost:3000/api/products/order",{
+          method: 'POST',
+          headers:{
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify(order),
+        })
+        .then((res)=>{
+          return res.json();
+        })
+        .then((data)=>{
+          localStorage.clear();
+          localStorage.setItem('orderId', data.orderId);
+          document.location.href = "confirmation.html";
+        });
+ };
+ sendOrder(order);
+
+})
 }
 
-// //function envoie les données
-// const sendOrder = async (order) =>{
-//   const res = await fetch("http://localhost:3000/api/products/order",
-//   {method: 'POST',
-//   headers: {
-//     "Content-Type": "application/json"
-//   },
-//   body: JSON.stringify(order),
-//   });
-// }
-
-// //function récupère l'id de la commande
-// const getOrderId = async () =>{
-//   let res = await sendOrder();
-//   console.log(thisRes);
-// }
 
 displayOrder();
 formSubmit();

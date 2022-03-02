@@ -84,9 +84,9 @@ const displayOrder = () =>{
 
     }
 
-totalOrder(product);
-changeQuantity(product);
-removeProduct(product);
+totalOrder();
+changeQuantity();
+removeProduct();
 //fin du fetch
   }); 
   //fin de la loop
@@ -102,17 +102,21 @@ const changeQuantity = (product) =>{
     let foundId = cart.find(kanap => kanap.id == kanapId && kanap.color == kanapColor);
 
 
-    input.addEventListener('change',()=>{
-        if(foundId != undefined){
-            foundId.quantity = parseInt(input.value);
-        }
-        saveCart(cart);
-        document.location.reload();
+    input.addEventListener('change',(event)=>{
+      if(input.value < 1 || input.value > 100){
+        input.value = 1;
+        alert("La quantité choisie doit être comprise entre 1 et 100")
+      }
+      if(foundId != undefined){
+          foundId.quantity = parseInt(input.value);
+      }
+      saveCart(cart);
+      document.location.reload();
       });
   });
 }
 //function enlève un produit du panier
-const removeProduct = (product) =>{
+const removeProduct = () =>{
   const deleteBtn = document.querySelectorAll('.deleteItem')
   deleteBtn.forEach(button =>{
     button.addEventListener('click', ()=>{
@@ -132,11 +136,11 @@ const removeProduct = (product) =>{
 //function test la validité des inputs
 const formSubmit = () =>{
   let form = document.querySelector('.cart__order__form');
-  let firstNameMessage = document.getElementById('firstNameErrorMsg')
-  let lastNameMessage = document.getElementById('lastNameErrorMsg')
-  let cityMessage = document.getElementById('cityErrorMsg')
-  let addressMessage = document.getElementById('addressErrorMsg')
-  let emailMessage = document.getElementById('emailErrorMsg')
+  let firstNameMessage = document.getElementById('firstNameErrorMsg');
+  let lastNameMessage = document.getElementById('lastNameErrorMsg');
+  let cityMessage = document.getElementById('cityErrorMsg');
+  let addressMessage = document.getElementById('addressErrorMsg');
+  let emailMessage = document.getElementById('emailErrorMsg');
 
   //contrôle de la validité des inputs
   form.firstName.addEventListener('change', ()=>{
@@ -151,7 +155,7 @@ const formSubmit = () =>{
   });
 
   form.address.addEventListener('change', ()=>{
-    validTextInput(form.address,addressMessage);
+    validAddressInput(form.address,addressMessage);
   })
   form.email.addEventListener('change', ()=>{
       validEmailInput(form.email,emailMessage);
@@ -159,32 +163,45 @@ const formSubmit = () =>{
 
   //function contrôle validité des inputs text
   const validTextInput = (input, error) =>{
-    // let textRegExp = new RegExp ('^.{2,}$', 'g');
-    // let testInput = textRegExp.test(input.value);
-    if (input.value.length >= 2){
-      error.textContent = '';
+    let textRegExp = new RegExp ("^[A-Za-z ,.'-]{2,}$", 'g');
+    let testInput = textRegExp.test(input.value);
+    if (testInput){
+      input.textContent = '';
       return true;
     }else{
-      error.textContent = "Le champ doit contenir au moins 2 caractères";
+      error.textContent = "Le texte saisi n'est pas valide.";
+      return false;
+    }
+  }
+
+  const validAddressInput = (input) =>{
+    let addressRegExp = new RegExp ("[a-zA-z0-9, .'-]{2,}$", 'g');
+    let testAddress = addressRegExp.test(input.value);
+    if(testAddress){
+      addressMessage.textContent = '';
+      return true;
+    }else{
+      addressMessage.textContent = "Le texte saisi n'est pas valide."
       return false;
     }
   }
   
   //function contrôle validité des inputs email
-  const validEmailInput = (input, error) =>{
+  const validEmailInput = (input) =>{
     let emailRegExp = new RegExp ('^[a-zA-Z0-9.-_]+[@]{1}[a-zA-Z]+[.]{1}[a-z]{2,5}$', 'g');
     let testEmail = emailRegExp.test(input.value);
     if (testEmail) {
       emailMessage.textContent = "";
       return true;
     }else{
-      emailMessage.textContent = 'Veuillez choisir une adresse email valide';
+      emailMessage.textContent = 'Veuillez choisir une adresse email valide.';
       return false;
     }
   }
 
-  form.addEventListener('submit', (e)=>{
-    e.preventDefault();
+  //event lors de la confirmation de commande - click sur le bouton commander
+  form.addEventListener('submit', (event)=>{
+    event.preventDefault();
       let cart = getCart();
       let products = [];
       cart.forEach(element =>{
@@ -192,7 +209,7 @@ const formSubmit = () =>{
         products.push(productId)
       })
       let order = {
-      contact: {
+      contact : {
         firstName: form.firstName.value,
         lastName: form.lastName.value,
         address: form.address.value,
@@ -202,40 +219,42 @@ const formSubmit = () =>{
       products: products
   };
 
+
   //vérifie si tous les champs sont correctements remplis
-    if (validEmailInput(email)===false || Object.values(order).some(obj => obj === false)){
+    if (validEmailInput(email) === false || validAddressInput(address) === false){
+      event.preventDefault();
       alert('Veuillez vérifier la validité de vos champs !');
-      e.preventDefault();
-    //vérifie si le panier est rempli
-    }else if(cart == false){
+    }else if(validTextInput(firstName,firstNameMessage) === false || validTextInput(lastName, lastNameMessage) === false || validTextInput(city,cityMessage) === false){
+      event.preventDefault();
+      alert('Veuillez vérifier la validité de vos champs !');
+  //vérifie si le panier est rempli
+    }else if(cart === false){
+      event.preventDefault();
       alert('Votre panier est vide, veuillez le remplir !');
-      e.preventDefault();
     }else{ 
       alert('Votre commande a bien été prise en compte !');
-      e.preventDefault();
-      // form.submit();
+      sendOrder(order);
     }
-
-    const sendOrder = (order) =>{
-      fetch("http://localhost:3000/api/products/order",{
-          method: 'POST',
-          headers:{
-            "Content-Type": "application/json"
-          },
-          body: JSON.stringify(order),
-        })
-        .then((res)=>{
-          return res.json();
-        })
-        .then((data)=>{
-          localStorage.clear();
-          localStorage.setItem('orderId', data.orderId);
-          document.location.href = "confirmation.html";
-        });
- };
- sendOrder(order);
-
 })
+
+//function envoie données à l'API
+const sendOrder = (order) =>{
+  fetch("http://localhost:3000/api/products/order",{
+      method: 'POST',
+      headers:{
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify(order),
+    })
+    .then((res)=>{
+      return res.json();
+    })
+    .then((data)=>{
+      localStorage.clear();
+      localStorage.setItem('orderId', data.orderId);
+      document.location.href = "confirmation.html";
+    });
+};
 }
 
 

@@ -71,7 +71,7 @@ const addCart = (product) =>{
     const productColors = document.getElementById('colors');
 
     //event lors du click sur le bouton ajouter au panier
-    addToCart.addEventListener('click', ()=>{
+    addToCart.addEventListener('click', (event)=>{
         //creation de l'objet kanap -> produit qui sera ajouté dans le panier
         let kanap = {
             id: product._id,
@@ -80,13 +80,21 @@ const addCart = (product) =>{
         }
     let foundId = cart.find(element => element.id == kanap.id && element.color == kanap.color)
 
-    if(foundId != undefined){
-        //augmente la qté de la couleur choisie
-        foundId.quantity = parseInt(foundId.quantity) + parseInt(quantity.value);
-        }else{
-        //ajoute un nouveau produit au panier
-        kanap.quantity = parseInt(quantity.value);
-        cart.push(kanap);
+    if(kanap.color === ""){
+        event.preventDefault();
+        alert('Veuillez choisir une couleur');
+    }else if(kanap.quantity < 1 || kanap.quantity > 100){
+        event.preventDefault();
+        alert('La quantité choisie est invalide')
+    }else{
+        if(foundId != undefined){
+            //augmente la qté de la couleur choisie
+            foundId.quantity = parseInt(foundId.quantity) + parseInt(quantity.value);
+            }else{
+            //ajoute un nouveau produit au panier
+            kanap.quantity = parseInt(quantity.value);
+            cart.push(kanap);
+        }
     }        
 
     saveCart(cart);

@@ -1,4 +1,4 @@
-//récupère seulement l'id du produit
+//récupère l'id du produit
 const params = (new URL(document.location)).searchParams;
 const productId = params.get("id");
 
@@ -7,7 +7,11 @@ const getProduct = async () =>{
 //récupère le produit
     let res = await fetch(`http://localhost:3000/api/products/${productId}`);
     let data = await res.json();
-    return data;
+    if(res.ok){
+        return data;
+    }else{
+        console.log("erreur");
+    }
 }
 
 //function défini le title de la page

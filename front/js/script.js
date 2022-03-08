@@ -1,24 +1,23 @@
-//function qui récupère les données
+//function get datas from API
 const getProducts = async () =>{
     const res = await fetch("http://localhost:3000/api/products");
-    //transforme la réponse en json
+    //convert response to json
     const data = await res.json();
-    
+    console.log(res);
+    //if status 200-299 -> return res.json()
     if(res.ok){
         return data;
-    }else{
-        console.log("error");
     }
 }
 
-//function qui affiche les produits sur la page
+//function display all products on homepage
 const displayProducts = async () =>{
     let products = await getProducts();
-    //container de tous les produits
+    //container of items displayed on the page
     const itemSection = document.getElementById('items');
-    //loop va prendre chaque élément du tableau
+    //loop on every product of the API
     products.forEach(element => {
-        //+= permet avoir plusieurs éléments affiché
+        //+= allows to display all products
         itemSection.innerHTML +=
         `
         <a href="./product.html?id=${element._id}">

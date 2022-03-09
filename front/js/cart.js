@@ -139,7 +139,7 @@ const totalOrder = (product,element) =>{
 }
 
 
-//function test inputs validity
+//function tests inputs validity
 const formSubmit = () =>{
   let form = document.querySelector('.cart__order__form');
   let firstNameMessage = document.getElementById('firstNameErrorMsg');
@@ -169,7 +169,7 @@ const formSubmit = () =>{
 
   //function check firstName lastName city inputs validity
   const validTextInput = (input,error) =>{
-    let textRegExp = new RegExp (/^([A-Za-z]+[\-'\s]?){2,}$/, 'g'); //([A-Za-z]+[\. \-_\s]?)+ A CHANGER
+    let textRegExp = new RegExp (/^([A-Za-z]+[\-'\s]?){2,}$/, 'g');
     let testInput = textRegExp.test(input.value);
     if (testInput){
       error.textContent = '';
@@ -232,7 +232,7 @@ const formSubmit = () =>{
     }else if(validTextInput(firstName,firstNameMessage) === false || validTextInput(lastName, lastNameMessage) === false || validTextInput(city,cityMessage) === false){
       event.preventDefault();
       alert('Veuillez vérifier la validité de vos champs !');
-      //vérifie si le panier est rempli
+      //check if cart is empty
     }else if(cart.length === 0){
       event.preventDefault();
       alert('Votre panier est vide, veuillez le remplir !');
@@ -242,7 +242,8 @@ const formSubmit = () =>{
     }
 })
 }
-//function push data to API
+
+//function pushes data to API
 const sendOrder = (order) =>{
   fetch("http://localhost:3000/api/products/order",{
       method: 'POST',

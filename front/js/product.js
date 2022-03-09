@@ -1,62 +1,58 @@
-//récupère l'id du produit
-const params = (new URL(document.location)).searchParams;
-const productId = params.get("id");
+//get product ID
+const params = (new URL(window.location)).searchParams;
+const productId = params.get('id');
 
-//function récupère les données du produit selon l'id
+//function get data of product displayed on page
 const getProduct = async () =>{
-//récupère le produit
     let res = await fetch(`http://localhost:3000/api/products/${productId}`);
     let data = await res.json();
     if(res.ok){
         return data;
-    }else{
-        console.log("erreur");
     }
 }
 
-//function défini le title de la page
+//function defines page name
 const pageName = async () =>{
         let pageName = await getProduct();
         document.title = pageName.name;
     }
     
-    
 
-//function affiche les détails du produit
+//function displays product details
 const displayProduct = async () =>{
-    //récupère les données via la fonction
+    //get data with getProduct()
     let product = await getProduct();
 
-    //déclarations des variables
+    //variables declaration
     const productImg = document.querySelector('.item__img');
     const productName = document.getElementById('title');
     const productPrice = document.getElementById('price');
     const productDescription = document.getElementById('description');
     const productColors = document.getElementById('colors');
 
-    //affichage des données du produit
+    //display of product details
     productImg.innerHTML = `<img src="${product.imageUrl}" alt="${product.altTxt}">`;
     productName.textContent = product.name;
     productPrice.textContent = product.price;
     productDescription.textContent = product.description;
 
-    //loop qui créé une option pour chaque couleur 
+    //loop create a new option for each color
     product.colors.forEach(element => {
         let colors = document.createElement('option');
+        //new color is now child of the select element
         productColors.appendChild(colors);
+        //give name and value of the color
         colors.textContent = element;
         colors.value = element;
     });
-
-    addCart(product);
 }
 
-//function stock élément dans localStorage
+//function stocks element in localStorage
 const saveCart = (cart) =>{
     localStorage.setItem('cart', JSON.stringify(cart));
 }
 
-//function récupère élément dans localStorage
+//function gets element in localStorage
 const getCart = () =>{
     let cart = JSON.parse(localStorage.getItem('cart'));
         if(cart == null){
@@ -66,24 +62,26 @@ const getCart = () =>{
         }
 }
 
-//function ajoute les éléments au panier
-const addCart = (product) =>{
+//function adds product to cart
+const addCart = async () =>{
+    let product = await getProduct();
     let cart = getCart();
-    //déclaration des variables
+    //variables declaration
     const addToCart = document.getElementById('addToCart');
     const quantity = document.getElementById('quantity');
     const productColors = document.getElementById('colors');
 
-    //event lors du click sur le bouton ajouter au panier
+    //click event on add to cart button
     addToCart.addEventListener('click', (event)=>{
-        //creation de l'objet kanap -> produit qui sera ajouté dans le panier
+        //creation of kanap object -> product store into localStorage
         let kanap = {
             id: product._id,
             color: productColors.value,
             quantity: quantity.value
         }
     let foundId = cart.find(element => element.id == kanap.id && element.color == kanap.color)
-
+    
+    //check for existing color or invalid quantity
     if(kanap.color === ""){
         event.preventDefault();
         alert('Veuillez choisir une couleur');
@@ -92,19 +90,19 @@ const addCart = (product) =>{
         alert('La quantité choisie est invalide')
     }else{
         if(foundId != undefined){
-            //augmente la qté de la couleur choisie
+            //increase quantity of product
             foundId.quantity = parseInt(foundId.quantity) + parseInt(quantity.value);
             }else{
-            //ajoute un nouveau produit au panier
+            //add new product to cart
             kanap.quantity = parseInt(quantity.value);
             cart.push(kanap);
         }
     }        
-
+    //save new cart to localStorage
     saveCart(cart);
-
     });
 }
 
 pageName();
 displayProduct();
+addCart();

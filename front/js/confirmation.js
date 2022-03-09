@@ -1,4 +1,4 @@
-//function affiche le numéro de commande 
+//function display order ID
 const displayOrderId = () =>{
     let orderId = localStorage.getItem('orderId');
     document.getElementById('orderId').textContent = orderId;

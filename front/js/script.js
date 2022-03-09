@@ -3,7 +3,6 @@ const getProducts = async () =>{
     const res = await fetch("http://localhost:3000/api/products");
     //convert response to json
     const data = await res.json();
-    console.log(res);
     //if status 200-299 -> return res.json()
     if(res.ok){
         return data;

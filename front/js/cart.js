@@ -1,12 +1,13 @@
+//variables declaration - use for total price and total quantity in function totalOrder()
 let totalProducts = 0;
 let totalAmount = 0;
 
-//function stock élément dans localStorage
+//function stocks element in localStorage
 const saveCart = (cart) =>{
   localStorage.setItem('cart', JSON.stringify(cart));
 }
 
-//function récupère élément dans localStorage
+//function gets element in localStorage
 const getCart = () =>{
   let cart = JSON.parse(localStorage.getItem('cart'));
       if(cart == null){
@@ -16,7 +17,7 @@ const getCart = () =>{
       }
 }
 
-//function récupère les données du produit 
+//function gets products data
 const getProduct = () =>{
   let cart = getCart();
   cart.forEach(async (element) =>{
@@ -27,16 +28,14 @@ const getProduct = () =>{
       displayOrder(product,element)
       totalOrder(product,element);
       return product;
-    }else{
-      console.log("Erreur");
     }
   })
 }
 
-//function affichage de la commande et de ses modifications (modifications de quantité, suppression d'articles)
+//function displays order and its modifications (quantity number/deletion)
 const displayOrder = (product,element) =>{
   const cartItems = document.getElementById('cart__items');
-    //affichage de chaque produit sur la page
+    //display each product
     cartItems.innerHTML +=
     `
     <article class="cart__item" data-id="${element.id}" data-color="${element.color}">
@@ -62,7 +61,7 @@ const displayOrder = (product,element) =>{
     </article>
     `
 
-  //function change la quantité depuis l'input
+  //function changes quantity by the input
   const changeQuantity = () =>{
     let cart = getCart();
     let inputQuantity = document.querySelectorAll('.itemQuantity');
@@ -75,7 +74,7 @@ const displayOrder = (product,element) =>{
   
     input.addEventListener('change',()=>{
       if(input.value < 1 || input.value > 100){
-        //la valeur de l'input est la même que la quantité choisie avant
+        //input value doesn't change 
         input.value = element.quantity;
         alert("La quantité choisie doit être comprise entre 1 et 100")
       }
@@ -88,7 +87,7 @@ const displayOrder = (product,element) =>{
   });
 }
   
-  //function enlève un produit du panier
+  //function remove a product
   const removeProduct = () =>{
     const deleteBtn = document.querySelectorAll('.deleteItem')
       deleteBtn.forEach(button =>{
@@ -96,6 +95,7 @@ const displayOrder = (product,element) =>{
           let cart = getCart();
           const targetProductId = button.closest('[data-id]').dataset.id;
           const  targetProductColor= button.closest('[data-id]').dataset.color;
+          //create new cart with every product that has a different id of targetProductId
           cart = cart.filter(kanap => kanap.id != targetProductId || kanap.color != targetProductColor);
           alert('Votre produit a été supprimé du panier')
           saveCart(cart)
@@ -111,33 +111,35 @@ removeProduct();
 
 
 
-//function affiche total articles et prix total
+//function display total quantity and final price
 const totalOrder = (product,element) =>{
   let totalQuantity = document.getElementById('totalQuantity');
   let totalPrice = document.getElementById('totalPrice');
-  //création tableau qui va contenir tous les prix du panier
+  //arrays contain total quantity and total price
   let cartQuantity = [];
   let cartPrices = [];    
 
-  //ajouts des éléments dans leur tableau respectif
+  //push element inside the arrays
   cartPrices.push(element.quantity * product.price);
   cartQuantity.push(element.quantity);
     
-  //somme des quantités de chaque produit - la somme sera affichée
+  //sum of quantity of each product - amount will be display
   for (let i = 0; i < cartQuantity.length; i++){
+    //totalProducts starts at 0
     totalProducts += cartQuantity[i];
   }
   totalQuantity.textContent = totalProducts;
   
-  //somme des prix du nombre de produits - la somme sera affichée
+  //sum of prices of each product - price will be display
   for (let i = 0; i < cartPrices.length; i++){
+    //totalAmount starts at 0
     totalAmount += cartPrices[i];
   }
   totalPrice.textContent = totalAmount.toFixed(2);
 }
 
 
-//function test la validité des inputs
+//function test inputs validity
 const formSubmit = () =>{
   let form = document.querySelector('.cart__order__form');
   let firstNameMessage = document.getElementById('firstNameErrorMsg');
@@ -146,7 +148,7 @@ const formSubmit = () =>{
   let addressMessage = document.getElementById('addressErrorMsg');
   let emailMessage = document.getElementById('emailErrorMsg');
 
-  //contrôle de la validité des inputs
+  //check inputs validity
   form.firstName.addEventListener('change', ()=>{
       validTextInput(form.firstName, firstNameMessage);
   });
@@ -165,36 +167,32 @@ const formSubmit = () =>{
       validEmailInput(form.email,emailMessage);
   });
 
-  //function contrôle validité des inputs text
+  //function check firstName lastName city inputs validity
   const validTextInput = (input,error) =>{
-    let textRegExp = new RegExp (/^([A-Za-z]+[\.\-_'\s]?){2,}$/, 'g'); //([A-Za-z]+[\. \-_\s]?)+ A CHANGER
+    let textRegExp = new RegExp (/^([A-Za-z]+[\-'\s]?){2,}$/, 'g'); //([A-Za-z]+[\. \-_\s]?)+ A CHANGER
     let testInput = textRegExp.test(input.value);
     if (testInput){
       error.textContent = '';
-      console.log(input.value + " le test est bon");
       return true;
     }else{
       error.textContent = "Le texte saisi n'est pas valide.";
-      console.log(input.value + " le test est pas bon");
       return false;
     }
   }
-
+  //function check address input validity
   const validAddressInput = (input) =>{
-    let addressRegExp = new RegExp (/^([A-Za-z0-9]+[\.\-_'\s]?){2,}$/, 'g');
+    let addressRegExp = new RegExp (/^([A-Za-z0-9]+[\-'\s]?){2,}$/, 'g');
     let testAddress = addressRegExp.test(input.value);
     if(testAddress){
       addressMessage.textContent = '';
-      console.log(input.value + " address bon");
       return true;
     }else{
       addressMessage.textContent = "Le texte saisi n'est pas valide."
-      console.log(input.value + " address pas bon");
       return false;
     }
   }
   
-  //function contrôle validité des inputs email
+  //function check email input validity
   const validEmailInput = (input) =>{
     let emailRegExp = new RegExp (/^[a-zA-Z0-9\.\-\_]+[@]{1}[a-zA-Z]+[.]{1}[a-z]{2,}$/, 'g');
     let testEmail = emailRegExp.test(input.value);
@@ -207,7 +205,7 @@ const formSubmit = () =>{
     }
   }
 
-  //event lors de la confirmation de commande - click sur le bouton commander
+  //submit event when user click "commander" button 
   form.addEventListener('submit', (event)=>{
       let cart = getCart();
       let products = [];
@@ -227,7 +225,7 @@ const formSubmit = () =>{
   };
 
 
-  //vérifie si tous les champs sont correctements remplis
+  //check inputs validity -- if input value === false --> alert, else send order
     if (validEmailInput(email) === false || validAddressInput(address) === false){
       event.preventDefault();
       alert('Veuillez vérifier la validité de vos champs !');
@@ -244,7 +242,7 @@ const formSubmit = () =>{
     }
 })
 }
-//function envoie données à l'API
+//function push data to API
 const sendOrder = (order) =>{
   fetch("http://localhost:3000/api/products/order",{
       method: 'POST',
@@ -253,9 +251,7 @@ const sendOrder = (order) =>{
       },
       body: JSON.stringify(order),
     })
-    .then((res)=>{
-      return res.json();
-    })
+    .then(res => res.json())
     .then((data)=>{
       localStorage.clear();
       localStorage.setItem('orderId', data.orderId);

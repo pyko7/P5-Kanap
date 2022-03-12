@@ -207,6 +207,7 @@ const formSubmit = () =>{
 
   //submit event when user click "commander" button 
   form.addEventListener('submit', (event)=>{
+      event.preventDefault();
       let cart = getCart();
       let products = [];
       cart.forEach(element =>{
@@ -227,14 +228,11 @@ const formSubmit = () =>{
 
   //check inputs validity -- if input value === false --> alert, else send order
     if (validEmailInput(email) === false || validAddressInput(address) === false){
-      event.preventDefault();
       alert('Veuillez vérifier la validité de vos champs !');
     }else if(validTextInput(firstName,firstNameMessage) === false || validTextInput(lastName, lastNameMessage) === false || validTextInput(city,cityMessage) === false){
-      event.preventDefault();
       alert('Veuillez vérifier la validité de vos champs !');
       //check if cart is empty
     }else if(cart.length === 0){
-      event.preventDefault();
       alert('Votre panier est vide, veuillez le remplir !');
     }else{ 
       alert('Votre commande a bien été prise en compte !');

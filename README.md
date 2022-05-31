@@ -8,7 +8,6 @@ Do you remember the last time you woke up in the middle of the night feeling ter
 
 - [Overview](#overview)
   - [The project](#the-project)
-  - [Links](#links)
 - [My process](#my-process)
   - [Built with](#built-with)
 - [Author](#author)
@@ -25,12 +24,6 @@ For this project, the objective is to allow the user to order one or more sofas.
     -On cart page, every product are display and there's total quantity and total price of the order.
     -User can still modify quantity or remove product on the cart page.
     -Clicking on the order button redirect the user to a confirmation page where a confirmation number is written.
-
-
-
-### Links
-
-- Live Site URL: [Kanap](https://pyko7.github.io/P5-Kanap/)
 
 ## My process
 
